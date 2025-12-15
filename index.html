@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Открытка Деду Морозу</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Georgia", serif;
+        background: linear-gradient(to bottom, #0a1f29, #0c2d3d);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .layout-table {
+        width: 100%;
+        height: 100vh;
+        border-collapse: collapse;
+      }
+
+      .layout-cell {
+        padding: 24px;
+        vertical-align: middle;
+      }
+
+      .letter-table {
+        width: 100%;
+        height: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        background: linear-gradient(to bottom, #fffaf0, #f5f5f5);
+      }
+
+      .letter-row td {
+        padding: 0;
+      }
+
+      .message-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .msg-cell {
+        padding: 10px 0;
+      }
+
+      .msg-cell p {
+        margin: 0;
+        font-size: 1.3rem;
+        line-height: 1.8;
+        color: #333;
+        font-family: "Caveat", "Georgia", serif;
+        letter-spacing: 0.2px;
+      }
+
+      .signature-cell {
+        padding-top: 12px;
+      }
+
+      .button-cell {
+        text-align: right;
+        padding-top: 12px;
+      }
+
+      /* Снежный фон */
+      .snow-container {
+        position: fixed;
+        top: -20px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .snowflake {
+        position: absolute;
+        background: none;
+        color: #fff;
+        opacity: 0.85;
+        animation-name: fall;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        will-change: transform;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-100px) rotate(0deg);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0.2;
+        }
+      }
+
+      /* Контейнер открытки */
+      .card-wrapper {
+        position: relative;
+        width: 90%;
+        max-width: 800px;
+        height: 90vh;
+        perspective: 1500px;
+        z-index: 2;
+        margin: 0 auto;
+      }
+
+      /* Закрытая открытка */
+      .card-closed {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        transform-style: preserve-3d;
+        transform-origin: left center;
+        transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        z-index: 222;
+      }
+
+      .card-opened .card-closed {
+        transform: rotateY(-180deg);
+      }
+
+      /* Лицевая сторона закрытой открытки */
+      .card-front {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 5px;
+        overflow: hidden;
+        background: linear-gradient(45deg, #8b0000, #b22222);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .card-front::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        border-radius: 5px;
+        pointer-events: none;
+      }
+
+      .card-front .title-front {
+        font-size: 86px;
+        color: #fff;
+        text-shadow: 3px 5px 15px rgba(0, 0, 0, 0.7);
+        margin-bottom: 20px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        animation: titleGlow 2s infinite alternate;
+      }
+
+      @keyframes titleGlow {
+        0% {
+          text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7),
+            0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        100% {
+          text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7),
+            0 0 20px rgba(255, 215, 0, 0.9);
+        }
+      }
+
+      .card-front p {
+        font-size: 1.4rem;
+        color: white;
+        margin-bottom: 40px;
+        max-width: 500px;
+        line-height: 1.6;
+      }
+
+      .click-hint {
+        position: absolute;
+        bottom: 30px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-size: 1.2rem;
+        color: #ffd700;
+        animation: pulseHint 1.5s infinite;
+      }
+
+      @keyframes pulseHint {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+      }
+
+      .seal {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 90px;
+        height: 90px;
+        background: rgb(255, 255, 255);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: rotate(15deg);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        animation: sealFloat 3s infinite ease-in-out;
+      }
+
+      @keyframes sealFloat {
+        0%,
+        100% {
+          transform: rotate(15deg) translateY(0);
+        }
+        50% {
+          transform: rotate(15deg) translateY(-10px);
+        }
+      }
+
+      .seal-text {
+        font-weight: bold;
+        color: #8b0000;
+        text-align: center;
+        line-height: 1.2;
+        font-size: 20px;
+      }
+
+      /* Обратная сторона закрытой открытки */
+      .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 5px;
+        overflow: hidden;
+        background: #f5f5f5;
+        transform: rotateY(180deg);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Внутренняя часть открытки */
+      .card-inside {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, #fffaf0, #f5f5f5);
+        color: #333;
+        padding: 40px;
+        display: block;
+        opacity: 0;
+        transform: translateX(50px);
+        transition: opacity 0.8s 0.5s, transform 0.8s 0.5s;
+        border-radius: 5px;
+        box-shadow: inset 0 0 30px rgba(139, 0, 0, 0.1);
+      }
+
+      .card-opened .card-inside {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .inside-header {
+        text-align: center;
+        border-bottom: 2px solid #8b0000;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+
+      .inside-header .letter-title {
+        font-size: 2.5rem;
+        color: #8b0000;
+        margin-bottom: 10px;
+      }
+
+      .inside-header p {
+        font-size: 1.2rem;
+        color: #555;
+        font-style: italic;
+      }
+
+      .message-container {
+        flex-grow: 1;
+        padding: 20px 0;
+        position: relative;
+      }
+
+      .message {
+        font-size: 1.3rem;
+        line-height: 1.8;
+        color: #333;
+        text-align: justify;
+      }
+
+      .message p {
+        margin-bottom: 20px;
+      }
+
+      .signature {
+        text-align: right;
+        margin-top: 30px;
+        font-size: 1.5rem;
+        color: #8b0000;
+        font-weight: 700;
+        font-family: "Caveat", "Georgia", serif;
+      }
+
+      p,
+      div,
+      button {
+        font-family: "Caveat", "Georgia", serif;
+      }
+
+      .msg-line {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.8;
+        color: #333;
+      }
+
+      .front-text {
+        font-size: 24px;
+        color: white;
+        margin-bottom: 40px;
+        max-width: 500px;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      .header-subtitle {
+        font-size: 1.2rem;
+        color: #555;
+        font-style: italic;
+        margin: 0;
+      }
+
+      .inside-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        border-top: 2px solid #8b0000;
+      }
+
+      .snowman-hat-top {
+        position: absolute;
+        width: 30px;
+        height: 25px;
+        background: #8b0000;
+        top: -25px;
+        left: 25px;
+        border-radius: 5px 5px 0 0;
+      }
+
+      .new-year-date {
+        font-size: 1.5rem;
+        color: #8b0000;
+        font-weight: bold;
+      }
+
+      /* Анимации для внутреннего содержимого */
+      .decorative-element {
+        position: absolute;
+        opacity: 0.1;
+        pointer-events: none;
+      }
+
+      .snowflake-inside {
+        position: absolute;
+        color: #8b0000;
+        font-size: 24px;
+        opacity: 0.1;
+        animation: floatAround 20s infinite linear;
+      }
+
+      @keyframes floatAround {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+          transform: translate(100px, 50px) rotate(90deg);
+        }
+        50% {
+          transform: translate(50px, 100px) rotate(180deg);
+        }
+        75% {
+          transform: translate(-50px, 50px) rotate(270deg);
+        }
+        100% {
+          transform: translate(0, 0) rotate(360deg);
+        }
+      }
+
+      /* Кнопка закрытия */
+      .close-btn {
+        position: absolute;
+        bottom: 14px;
+        right: 40px;
+        background: #8b0000;
+        color: white;
+        border: none;
+        padding: 6px 25px;
+        border-radius: 30px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        font-size: 22px;
+      }
+
+      .close-btn:hover {
+        background: #a52a2a;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Адаптивность */
+      @media (max-width: 768px) {
+        .card-wrapper {
+          height: 450px;
+        }
+
+        .card-front h1 {
+          font-size: 2.5rem;
+        }
+
+        .card-front p {
+          font-size: 1.2rem;
+        }
+
+        .inside-header h2 {
+          font-size: 2rem;
+        }
+
+        .message {
+          font-size: 1.1rem;
+        }
+
+        .new-year-date {
+          font-size: 1.2rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .card-wrapper {
+          height: 400px;
+        }
+
+        .card-front,
+        .card-inside {
+          padding: 20px;
+        }
+
+        .card-front h1 {
+          font-size: 2rem;
+        }
+
+        .click-hint {
+          font-size: 1rem;
+          padding: 8px 16px;
+        }
+
+        .seal {
+          width: 60px;
+          height: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Снег на заднем фоне -->
+    <div class="snow-container" id="snow-container"></div>
+
+    <!-- Табличный контейнер для открытки -->
+    <table class="layout-table" role="presentation">
+      <tr>
+        <td class="layout-cell">
+          <div class="card-wrapper" id="card-wrapper">
+            <!-- Закрытая открытка -->
+            <div class="card-closed">
+              <!-- Лицевая сторона -->
+              <div class="card-front">
+                <div class="seal">
+                  <div class="seal-text">Для Максима</div>
+                </div>
+                <div class="title-front">С Новым Годом!</div>
+                <div class="front-text">
+                  Дорогой Дедушка Мороз, это письмо специально для тебя. Нажми,
+                  чтобы открыть и прочитать поздравление!
+                </div>
+                <div class="click-hint">Нажми, чтобы открыть</div>
+              </div>
+
+              <!-- Обратная сторона -->
+              <div class="card-back"></div>
+            </div>
+
+            <!-- Внутренняя часть открытки -->
+            <div class="card-inside">
+              <table class="letter-table" role="presentation">
+                <tr class="letter-row header-row">
+                  <td>
+                    <div class="inside-header">
+                      <div class="letter-title">Дорогому Деду Морозу!</div>
+                      <div class="header-subtitle">
+                        От всего сердца и с наилучшими пожеланиями
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="letter-row message-row">
+                  <td>
+                    <div class="message-container" id="message-container">
+                      <!-- Сообщение в табличной вёрстке -->
+                      <table class="message-table" role="presentation">
+                        <tr>
+                          <td class="msg-cell">
+                            <div class="msg-line">Уважаемый Дедушка Мороз!</div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="msg-cell">
+                            <div class="msg-line">
+                              Мне без разницы на то вручит ли мне бог рандома
+                              подарок или нет, ведь самый лучший подарок я уже
+                              получил.
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="msg-cell">
+                            <div class="msg-line">
+                              Я пишу это лишь чтоб пожелать тебе от всей души
+                              крепкого здоровья, неиссякаемой энергии и терпения
+                              во всех твоих делах. <br />
+                              Пусть твои сани летят быстрее северного ветра,
+                              олени хранят силу и бодрость, а в доме твоём
+                              всегда царил достаток и уют. <br />
+                              (Ведь самый бесценный дар у твоей семьи уже есть,
+                              и это - ваша взаимная и неподдельная любовь).
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="msg-cell signature-cell">
+                            <div class="signature">
+                              С любовью и уважением,<br />Твой преданный ученик
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="letter-row footer-row">
+                  <td>
+                    <div class="inside-footer">
+                      <div class="new-year-date">15 декабря 2025</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="letter-row button-row">
+                  <td class="button-cell">
+                    <button class="close-btn" id="close-btn">
+                      Закрыть открытку
+                    </button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Конфетти при открытии -->
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <script>
+      // Создание снежинок
+      function createSnowflakes() {
+        const snowContainer = document.getElementById("snow-container");
+        const snowflakeCount = 120;
+
+        for (let i = 0; i < snowflakeCount; i++) {
+          const snowflake = document.createElement("div");
+          snowflake.classList.add("snowflake");
+          snowflake.textContent = "❄";
+
+          // Размер снежинки
+          const size = Math.random() * 14 + 10;
+          snowflake.style.fontSize = `${size}px`;
+
+          // Позиция
+          snowflake.style.left = `${Math.random() * 100}%`;
+
+          // Скорость падения
+          const duration = Math.random() * 10 + 10;
+          snowflake.style.animationDuration = `${duration}s`;
+
+          // Запускаем анимацию с отрицательной задержкой,
+          // чтобы снежинка появлялась уже "в полёте"
+          const offset = Math.random() * duration * -1;
+          snowflake.style.animationDelay = `${offset}s`;
+
+          // Легкое движение в стороны
+          snowflake.style.transform = `translateX(${
+            Math.random() * 20 - 10
+          }px)`;
+
+          snowContainer.appendChild(snowflake);
+        }
+      }
+
+      // Добавление декоративных снежинок внутри открытки
+      function addInsideSnowflakes() {
+        const messageContainer = document.getElementById("message-container");
+        const snowflakeCount = 15;
+
+        for (let i = 0; i < snowflakeCount; i++) {
+          const snowflake = document.createElement("div");
+          snowflake.classList.add("snowflake-inside");
+          snowflake.innerHTML = ".";
+
+          // Позиция
+          snowflake.style.left = `${Math.random() * 90 + 5}%`;
+          snowflake.style.top = `${Math.random() * 80 + 10}%`;
+
+          // Размер
+          const size = Math.random() * 20 + 15;
+          snowflake.style.fontSize = `${size}px`;
+
+          // Скорость анимации
+          const duration = Math.random() * 30 + 20;
+          snowflake.style.animationDuration = `${duration}s`;
+
+          messageContainer.appendChild(snowflake);
+        }
+      }
+
+      // Открытие/закрытие открытки
+      function setupCardInteractions() {
+        const cardWrapper = document.getElementById("card-wrapper");
+        const closeBtn = document.getElementById("close-btn");
+        const cardFront = document.querySelector(".card-front");
+
+        // Открытие открытки
+        cardFront.addEventListener("click", function () {
+          cardWrapper.classList.add("card-opened");
+
+          // Добавляем звуковой эффект (по желанию)
+          const audio = new Audio(
+            "https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"
+          );
+          audio.volume = 0.3;
+          audio
+            .play()
+            .catch((e) => console.log("Аудио не воспроизведено: ", e));
+        });
+
+        // Закрытие открытки
+        closeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          cardWrapper.classList.remove("card-opened");
+
+          // Добавляем звуковой эффект закрытия
+          const audio = new Audio(
+            "https://assets.mixkit.co/sfx/preview/mixkit-page-turn-swipe-1414.mp3"
+          );
+          audio.volume = 0.3;
+          audio
+            .play()
+            .catch((e) => console.log("Аудио не воспроизведено: ", e));
+        });
+
+        // Закрытие при клике вне открытки
+        document.addEventListener("click", function (e) {
+          if (
+            cardWrapper.classList.contains("card-opened") &&
+            !e.target.closest(".card-wrapper") &&
+            !e.target.closest(".close-btn")
+          ) {
+            cardWrapper.classList.remove("card-opened");
+          }
+        });
+      }
+
+      // Инициализация при загрузке страницы
+      document.addEventListener("DOMContentLoaded", function () {
+        createSnowflakes();
+        addInsideSnowflakes();
+        setupCardInteractions();
+
+        // Добавление параллакс-эффекта для снега при движении мыши
+        document.addEventListener("mousemove", function (e) {
+          const snowContainer = document.getElementById("snow-container");
+          const x = e.clientX / window.innerWidth;
+          const y = e.clientY / window.innerHeight;
+
+          snowContainer.style.transform = `translate(${x * 15}px, ${y * 15}px)`;
+        });
+
+        // Анимация для печати на конверте
+        const seal = document.querySelector(".seal");
+        setInterval(() => {
+          seal.style.transform = `rotate(${
+            15 + Math.sin(Date.now() / 1000) * 5
+          }deg)`;
+        }, 50);
+      });
+    </script>
+  </body>
+</html>
