@@ -678,14 +678,6 @@
         cardFront.addEventListener("click", function () {
           cardWrapper.classList.add("card-opened");
 
-          // Добавляем звуковой эффект (по желанию)
-          const audio = new Audio(
-            "https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"
-          );
-          audio.volume = 0.3;
-          audio
-            .play()
-            .catch((e) => console.log("Аудио не воспроизведено: ", e));
         });
 
         // Закрытие открытки
